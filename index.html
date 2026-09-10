@@ -131,6 +131,42 @@
   .kpi.accent-warn .val{color:var(--warn);}
   .kpi.accent-brass .val{color:var(--brass);}
 
+  /* ---------- SALDO SUMMARY ---------- */
+  .saldo-wrap{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;
+    margin:38px 0 44px;
+  }
+  .saldo-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 24px;
+  }
+  .saldo-card .saldo-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .saldo-card .saldo-title{
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:22px;
+  }
+  .saldo-card .saldo-net{
+    font-family:'IBM Plex Mono', monospace; font-size:13px;
+    padding:4px 12px; border-radius:20px;
+  }
+  .saldo-card .saldo-net.neg{background:#3a1e1f; color:var(--danger); border:1px solid #55292b;}
+  .saldo-card .saldo-net.pos{background:#1c3a2b; color:var(--ok); border:1px solid #2b5540;}
+  .saldo-card .saldo-net.zero{background:#26313f; color:var(--text-dim); border:1px solid var(--line);}
+  .saldo-rows{display:flex; gap:14px;}
+  .saldo-rows .row{flex:1; text-align:center; padding:14px 8px; border-radius:8px; background:#ffffff05;}
+  .saldo-rows .row .n{font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:32px; line-height:1;}
+  .saldo-rows .row.in .n{color:var(--ok);}
+  .saldo-rows .row.out .n{color:var(--danger);}
+  .saldo-rows .row .l{font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-top:6px;}
+  .saldo-foot{
+    margin-top:16px; padding-top:14px; border-top:1px dashed var(--line);
+    font-size:12.5px; color:var(--text-faint); line-height:1.5;
+  }
+
   /* ---------- SECTIONS ---------- */
   section.block{margin-bottom:56px; scroll-margin-top:24px;}
   .block-head{
@@ -177,6 +213,7 @@
   .badge.sem{background:#3a2f1c; color:var(--warn); border:1px solid #55432b;}
   .badge.wait{background:#2a1f31; color:#c79bd8; border:1px solid #422e4d;}
   .badge.confirmed{background:#1c3a2b; color:var(--ok); border:1px solid #2b5540;}
+  .badge.danger{background:#3a1e1f; color:var(--danger); border:1px solid #55292b;}
 
   /* ---------- MAJORES TABLE ---------- */
   .maj-table{width:100%; border-collapse:collapse; font-size:14.5px;}
@@ -215,9 +252,19 @@
 
   @media (max-width:760px){
     .ladder{grid-template-columns:1fr;}
+    .saldo-wrap{grid-template-columns:1fr;}
     .kpis{grid-template-columns:repeat(2,1fr);}
     .maj-table{font-size:13px;}
   }
+
+  .sector{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:2px 8px; border-radius:4px; margin-right:8px; display:inline-block;
+  }
+  .sector.ofsup{background:#2a2210; color:var(--brass-soft); border:1px solid #4a3c1a;}
+  .sector.captenn{background:#132635; color:var(--signal); border:1px solid #1e3d54;}
+  .sector.stensgt{background:#13291f; color:#7fd8b0; border:1px solid #1f4433;}
+  .section-note{margin-top:14px; font-size:13px; color:var(--text-faint); line-height:1.5;}
 </style>
 </head>
 <body>
@@ -226,202 +273,293 @@
   <div class="hero">
     <div class="eyebrow"><span class="dot"></span> ESCOLA DE COMUNICAÇÕES — S/1 · GESTÃO DE PESSOAL</div>
     <h1>Movimentação EsCom <span class="year">2027</span></h1>
-    <p class="sub">Panorama consolidado de vagas de PNR, saídas, entradas confirmadas e possíveis, organizado por escalão hierárquico — Oficiais Superiores, Capitães/Tenentes e Subtenentes/Sargentos.</p>
+    <p class="sub">Panorama consolidado de PNR vagos, propostas e transferências confirmadas, organizado por categoria de movimentação — Oficiais e Subtenentes/Sargentos.</p>
     <div class="meta-row">
       <span><b>Escala:</b> Of Sup · Cap/Ten · STen/Sgt</span>
-      <span><b>Movimentações mapeadas:</b> 27</span>
-      <span><b>Atualizado:</b> Jul/2026 para ano-base 2027</span>
+      <span><b>Atualizado:</b> Ago/2026 para ano-base 2027</span>
     </div>
   </div>
 
-  <div class="ladder">
-    <a href="#ofsup" class="rung tier-a">
-      <span class="tier-label">Escalão I</span>
-      <span class="tier-name">Oficiais Superiores</span>
-      <span class="tier-count">PNR em aberto — <b>02</b></span>
-    </a>
-    <a href="#captenn" class="rung tier-b">
-      <span class="tier-label">Escalão II</span>
-      <span class="tier-name">Capitães / Tenentes</span>
-      <span class="tier-count">PNR em aberto — <b>01</b></span>
-    </a>
-    <a href="#stensgt" class="rung tier-c">
-      <span class="tier-label">Escalão III</span>
-      <span class="tier-name">Subtenentes / Sargentos</span>
-      <span class="tier-count">PNR em aberto — <b>00</b></span>
-    </a>
+  <div class="saldo-wrap">
+    <div class="saldo-card">
+      <div class="saldo-head">
+        <span class="saldo-title">Saldo — Oficiais</span>
+        <span class="saldo-net neg">−4</span>
+      </div>
+      <div class="saldo-rows">
+        <div class="row in"><div class="n">01</div><div class="l">Entradas confirmadas</div></div>
+        <div class="row out"><div class="n">05</div><div class="l">Saídas confirmadas</div></div>
+      </div>
+      <div class="saldo-foot">Entrada: Cap Wanderley (PNR Fortaleza). Saídas 2027: Maj Caetano (DCT), Maj Glauco (ECEME), Cap Fortaleza, 1º Ten Rodney, 1º Ten Rodrigo. Não conta: Ten Cel Paulo e Maj Marin (saídas de ciclos anteriores, PNR seguem vagos), Ten Douglas Moura (possível saída, não confirmada), propostas de entrada não confirmadas (Leonardo Pereira, 1º Ten Gava, 2º Ten Nilton, 1º Ten Resmini).</div>
+    </div>
+    <div class="saldo-card">
+      <div class="saldo-head">
+        <span class="saldo-title">Saldo — Sargentos</span>
+        <span class="saldo-net zero">0</span>
+      </div>
+      <div class="saldo-rows">
+        <div class="row in"><div class="n">04</div><div class="l">Entradas confirmadas</div></div>
+        <div class="row out"><div class="n">04</div><div class="l">Saídas confirmadas</div></div>
+      </div>
+      <div class="saldo-foot">Entradas: Sgt Danilo da Silva Carvalho (PNR Rodrigo), Sgt Vinicius Lima, Sgt Petrus (PNR Lúcio), Sgt Lucas Guedes (PNR Tibúrcio). Saídas: Sgt Aguiar, Sgt Tibúrcio, Sgt Vinicius Santos (baixa do EB), Sgt Jaime (baixa do EB). Não conta: Sgt Nathan (possível saída), proposta de Willian no PNR do Aguiar (ainda não confirmada) e Sgt Ricardo Silva da Cruz (não confirmada).</div>
+    </div>
   </div>
 
   <div class="kpis">
-    <div class="kpi accent-warn"><div class="label">PNR em aberto</div><div class="val">03</div></div>
-    <div class="kpi accent-ok"><div class="label">P14 concluídos</div><div class="val">05</div></div>
-    <div class="kpi accent-warn"><div class="label">Saídas sem PNR</div><div class="val">04</div></div>
-    <div class="kpi accent-ok"><div class="label">Entradas confirmadas</div><div class="val">02</div></div>
-    <div class="kpi accent-ok"><div class="label">Entradas possíveis</div><div class="val">03</div></div>
+    <div class="kpi accent-warn"><div class="label">PNR vagos (Oficiais)</div><div class="val">06</div></div>
+    <div class="kpi accent-warn"><div class="label">PNR vagos (STen/Sgt)</div><div class="val">03</div></div>
+    <div class="kpi accent-ok"><div class="label">Entradas confirmadas</div><div class="val">05</div></div>
+    <div class="kpi accent-warn"><div class="label">Saídas sem PNR (confirm.)</div><div class="val">02</div></div>
+    <div class="kpi accent-brass"><div class="label">Propostas não confirmadas</div><div class="val">06</div></div>
   </div>
 
-  <!-- ================= OF SUP ================= -->
-  <section class="block" id="ofsup">
+  <!-- ================= PNR VAGOS OFICIAIS ================= -->
+  <section class="block" id="pnr-vagos-of">
     <div class="block-head">
       <span class="idx">01</span>
-      <h2>PNR vagos — Oficiais Superiores</h2>
-      <span class="tag">3 posições</span>
+      <h2>PNR — Oficiais</h2>
+      <span class="tag">6 posições</span>
     </div>
     <div class="grid-cards">
       <div class="card">
-        <div class="name">Ten Cel Com João Paulo <span class="badge pnr">P14 feito</span></div>
-        <div class="desc">P14 feito para o Maj Inf Theldo Kaio Rodrigues da Silva (BGP — curso de coordenação pedagógica).</div>
-        <div class="p14">P14 <b>2876940</b></div>
+        <div class="name"><span class="sector ofsup">Of Sup</span>Ten Cel Paulo</div>
+        <div class="desc">Transferência para a 3ª DE, em Cruz Alta/RS, já concluída. Nenhuma proposta no PNR ainda. PNR não conta no saldo de 2027 (saída de ciclo anterior), mas segue aberto.</div>
       </div>
       <div class="card">
-        <div class="name">Maj Caetano <span class="badge wait">Possível vaga</span></div>
-        <div class="desc">Possibilidade de vagar o PNR.</div>
+        <div class="name"><span class="sector ofsup">Of Sup</span>Maj Caetano</div>
+        <div class="desc">Transferência para o DCT já concluída. Nenhuma proposta no PNR ainda.</div>
         <div class="p14">P14 <b>2870086</b></div>
       </div>
       <div class="card">
-        <div class="name">Maj Glauco <span class="badge wait">Após o curso</span></div>
-        <div class="desc">PNR será liberado após o término do curso em andamento.</div>
+        <div class="name"><span class="sector ofsup">Of Sup</span>Maj Glauco</div>
+        <div class="desc">Transferência para a ECEME já concluída. Nenhuma proposta no PNR ainda.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>Maj Marin</div>
+        <div class="desc">Transferência para o CDCiber já concluída (ano passado). Proposta feita para o 2º Ten Com Nilton Silva da Anunciação Junior (terminando curso GCiber no CIGE) — aguardando concorde do Cmt do militar.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>Cap Fortaleza <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para ser Cmt da 7ª Cia Com, em Recife/PE, já concluída. PNR empenhado para o Cap Wanderley — já transferido no lugar.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>1º Ten Rodney</div>
+        <div class="desc">Transferência para ser Delegado em Aquidauana/MS já concluída. Proposta feita para o 1º Ten Art Resmini — aguardando concorde da PMB.</div>
       </div>
     </div>
   </section>
 
-  <!-- ================= CAP/TEN ================= -->
-  <section class="block" id="captenn">
+  <!-- ================= PROPOSTAS ENTRADA SEM PNR - OFICIAIS ================= -->
+  <section class="block" id="prop-entrada-of">
     <div class="block-head">
       <span class="idx">02</span>
-      <h2>PNR vagos — Capitães / Tenentes</h2>
-      <span class="tag">2 posições</span>
+      <h2>Propostas de entrada feitas sem PNR — Oficiais</h2>
+      <span class="tag">2 militares</span>
     </div>
     <div class="grid-cards">
       <div class="card">
-        <div class="name">Maj Inf Marin <span class="badge sem">PNR Cap/Ten</span></div>
-        <div class="desc">Vaga referente ao caso do 1º Ten Rodrigo (processo para Delegado).</div>
+        <div class="name">1º Ten Com Leonardo Pereira <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Atual Comandante de Pelotão (22º Pel Com Sl). Aguardando concorde do Cmt do militar.</div>
+        <div class="p14">P14 <b>2889505</b></div>
       </div>
       <div class="card">
-        <div class="name">Cap Com Fortaleza <span class="badge pnr">P14 feito</span></div>
-        <div class="desc">P14 feito para o Cap Com Wanderley Soares Dias (tentativa anterior com o Cap Art Cardoso não avançou).</div>
-        <div class="p14">P14 <b>2877608</b></div>
+        <div class="name">1º Ten Gava <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Ch Seç Inf, 12ª Cia Com L. Transferência ainda não confirmada.</div>
+        <div class="p14">P14 <b>2894070</b></div>
       </div>
     </div>
   </section>
 
-  <!-- ================= STEN/SGT ================= -->
-  <section class="block" id="stensgt">
+  <!-- ================= PNR VAGOS STEN/SGT ================= -->
+  <section class="block" id="pnr-vagos-sgt">
     <div class="block-head">
       <span class="idx">03</span>
-      <h2>PNR vagos — Subtenentes / Sargentos</h2>
+      <h2>PNR — Subtenentes / Sargentos</h2>
       <span class="tag">3 posições</span>
     </div>
     <div class="grid-cards">
       <div class="card">
-        <div class="name">Sgt Com Aguiar <span class="badge confirmed">Empenhado</span></div>
-        <div class="desc">Empenhado para o 2º Sgt Willian — transferência já publicada na DCEM.</div>
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>1º Ten Rodrigo <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para ser Delegado em Uruguaiana/RS já concluída. Oficial que ocupava PNR modelo STen/Sgt. Proposta do 1º Sgt QMS Com Danilo da Silva Carvalho (Nu 5º B Com) na vaga — transferência já confirmada.</div>
+        <div class="p14">P14 <b>2884689</b></div>
       </div>
       <div class="card">
-        <div class="name">Sgt Com Lúcio <span class="badge wait">P14 condicional</span></div>
-        <div class="desc">P14 feito para o Sgt Evandro no PNR do Sgt Lúcio, condicionado à transferência dele se confirmar.</div>
-        <div class="p14">P14 Evandro <b>2881721</b> · saída Lúcio (P16) <b>2829294</b></div>
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>Sgt Aguiar</div>
+        <div class="desc">Transferência para ser Cmt do TG 07-002, em Patos/PB. Proposta do 2º Sgt QMS Com Willian Antônio Barbosa na vaga — ainda não confirmada.</div>
       </div>
       <div class="card">
-        <div class="name">Sgt Mnt Com Tibúrcio <span class="badge pnr">P14 feito</span></div>
-        <div class="desc">Saiu a transferência para o GSI. P14 feito para o Sgt Lucas Guedes da Silva na vaga dele.</div>
-        <div class="p14">P14 Guedes <b>2879742</b> · saída Tibúrcio <b>2860875</b></div>
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>Sgt Tibúrcio <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para o GSI. P14 realizado para o 2º Sgt QMS Mnt Com Lucas Guedes da Silva na vaga — transferência já confirmada.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PNRS QUE PODEM VAGAR - STEN/SGT ================= -->
+  <section class="block" id="pnr-pode-vagar-sgt">
+    <div class="block-head">
+      <span class="idx">04</span>
+      <h2>PNRs que podem vagar — Subtenentes / Sargentos</h2>
+      <span class="tag">1 posição</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Sgt Lúcio <span class="badge wait">Condicional</span></div>
+        <div class="desc">PNR vai para o Sgt Petrus (transferência já confirmada), condicionado à confirmação da própria saída do Lúcio (P16 nr 2829294).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= POSSIVEIS SAIDAS SEM PNR ================= -->
+  <section class="block" id="poss-saidas">
+    <div class="block-head">
+      <span class="idx">05</span>
+      <h2>Possíveis saídas sem PNR</h2>
+      <span class="tag">2 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Ten Douglas Moura <span class="badge wait">Não confirmada</span></div>
+        <div class="desc">Pediu para sair voluntariamente. Ainda não confirmada.</div>
+      </div>
+      <div class="card">
+        <div class="name">Sgt Nathan <span class="badge wait">Não confirmada</span></div>
+        <div class="desc">Solicitou transferência. Ainda não confirmada.</div>
       </div>
     </div>
   </section>
 
   <!-- ================= SAIDAS SEM PNR ================= -->
-  <section class="block" id="saidas">
+  <section class="block" id="saidas-sem-pnr">
     <div class="block-head">
-      <span class="idx">04</span>
+      <span class="idx">06</span>
       <h2>Saídas sem PNR</h2>
-      <span class="tag">4 militares</span>
-    </div>
-    <div class="grid-cards">
-      <div class="card">
-        <div class="name">Sgt Mnt Com Vinicius Santos <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">Tentativa de reposição com o 3º Sgt Mnt Com Lucas — origem AMAN, padrinho Ten Rodney, destino Informática.</div>
-        <div class="p14">P14 <b>2860875</b> · proposta sem PNR</div>
-      </div>
-      <div class="card">
-        <div class="name">Sgt Mnt Com Jaime <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">Sem reposição indicada até o momento.</div>
-      </div>
-      <div class="card">
-        <div class="name">Ten QAO Com Douglas Moura <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">CAMEx — Brasília não indicada como 1ª opção.</div>
-      </div>
-      <div class="card">
-        <div class="name">Sgt Com Nathan <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">Sem reposição indicada até o momento.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= ENTRADAS ================= -->
-  <section class="block" id="entradas">
-    <div class="block-head">
-      <span class="idx">05</span>
-      <h2>Transferências confirmadas — entrada</h2>
       <span class="tag">2 militares</span>
     </div>
     <div class="grid-cards">
       <div class="card">
-        <div class="name">2º Sgt Com Willian <span class="badge pnr">Com PNR</span></div>
-        <div class="desc">Origem Nu 5º B Com · padrinho Sgt Bender · destino Seç Charlie. Já publicado no Adt DCEM 3F ao Bol DGP nº 073, de 26 JUN 26.</div>
-        <div class="p14">P14 <b>2863021</b></div>
+        <div class="name">Sgt Vinicius Santos <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Pediu baixa do EB.</div>
       </div>
       <div class="card">
-        <div class="name">1º Sgt Mnt Com Vinicius Lima <span class="badge pnr">Confirmado</span></div>
-        <div class="desc">Origem 2ª Cia Com Mec · padrinho Maj Luiz Paulo · destino Seç Alfa. Concretizado no Adt DCEM 3F ao Bol DGP nº 082, de 17 JUL 26.</div>
-        <div class="p14">P14 <b>2863409</b></div>
+        <div class="name">Sgt Jaime <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Pediu baixa do EB.</div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="entradas-poss">
-    <div class="block-head">
-      <span class="idx">06</span>
-      <h2>Possíveis transferências — entrada</h2>
-      <span class="tag">3 militares</span>
-    </div>
-
-    <div style="margin-bottom:14px; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint);">Oficiais</div>
-    <div class="grid-cards" style="margin-bottom:24px;">
-      <div class="card">
-        <div class="name">1º Ten QMB Maria Elisa Corsino <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">Aguardando definição de PNR para oficiais.</div>
-        <div class="p14">P14 <b>2859980</b></div>
-      </div>
-    </div>
-
-    <div style="margin-bottom:14px; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint);">Subtenentes / Sargentos</div>
-    <div class="grid-cards">
-      <div class="card">
-        <div class="name">3º Sgt Mnt Com Lucas <span class="badge sem">Sem PNR</span></div>
-        <div class="desc">Origem AMAN · padrinho Ten Rodney · destino Informática.</div>
-        <div class="p14">P14 <b>a confirmar</b> · nr anterior divergia do registro do Sgt Tibúrcio</div>
-      </div>
-      <div class="card">
-        <div class="name">1º Sgt Com Evandro <span class="badge wait">P14 condicional</span></div>
-        <div class="desc">Origem Gab Cmt EB · telegrafista. P14 feito no PNR do Sgt Lúcio, condicionado à saída dele se confirmar.</div>
-        <div class="p14">P14 <b>2881721</b></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= SAIDA ADICIONAL - OFICIAIS ================= -->
-  <section class="block" id="saida-oficial">
+  <!-- ================= PROPOSTAS ENTRADA SEM PNR - STEN/SGT ================= -->
+  <section class="block" id="prop-entrada-sgt">
     <div class="block-head">
       <span class="idx">07</span>
-      <h2>Saída em processo — Oficiais</h2>
-      <span class="tag">1 oficial</span>
+      <h2>Propostas de entrada feitas sem PNR — Subtenentes / Sargentos</h2>
+      <span class="tag">2 militares</span>
     </div>
     <div class="grid-cards">
       <div class="card">
-        <div class="name">Maj Com Willy Antunes Leal da Silva <span class="badge pnr">Inscrito</span></div>
-        <div class="desc">Transferência por necessidade do serviço, para desempenhar cargo de Subcomandante (S Cmt) em outra OM. Inscrito, aguardando concordância do Cmt/Chefe/Dir.</div>
-        <div class="p14">P10 <b>2867443</b></div>
+        <div class="name">2º Sgt Mnt Com Vinicius Lima <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Origem 2ª Cia Com Mec.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Ricardo Silva da Cruz <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Origem 7º BPE — realizando curso na EsCom.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRANSFERENCIAS CONFIRMADAS ENTRADA ================= -->
+  <section class="block" id="entradas-confirmadas">
+    <div class="block-head">
+      <span class="idx">08</span>
+      <h2>Transferências para a EsCom já confirmadas — entrada</h2>
+      <span class="tag">5 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Cap Wanderley <span class="badge pnr">Cap/Ten</span></div>
+        <div class="desc">Comandante de Pelotão (2º Pel Com Sl). Provavelmente vai para a Seç Charlie.</div>
+      </div>
+      <div class="card">
+        <div class="name">1º Sgt QMS Com Danilo da Silva Carvalho <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem Nu 5º B Com. Provavelmente vai para a Seç Bravo, telegrafista. Preenche o PNR do 1º Ten Rodrigo.</div>
+        <div class="p14">P14 <b>2884689</b></div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt Mnt Com Vinicius Lima <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem 2ª Cia Com Mec. Entrada sem PNR.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt Mnt Com Petrus <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem Base Adm CComGEx. Apresenta e ganha o PNR do Sgt Lúcio.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Mnt Com Lucas Guedes da Silva <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Provavelmente vai para a Seç Bravo. Preenche o PNR do Sgt Tibúrcio.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRANSFERENCIAS CONFIRMADAS SAIDA ================= -->
+  <section class="block" id="saidas-confirmadas">
+    <div class="block-head">
+      <span class="idx">09</span>
+      <h2>Transferências da EsCom já confirmadas — saída</h2>
+      <span class="tag">11 militares</span>
+    </div>
+    <div class="table-wrap">
+      <table class="maj-table">
+        <thead>
+          <tr><th class="num">Nº</th><th>Militar</th><th>PNR / Situação</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">01</td><td>Ten Cel Paulo</td><td class="pnr-type sup">3ª DE — Cruz Alta/RS</td></tr>
+          <tr><td class="num">02</td><td>Maj Caetano</td><td class="pnr-type sup">DCT</td></tr>
+          <tr><td class="num">03</td><td>Maj Glauco</td><td class="pnr-type sup">ECEME</td></tr>
+          <tr><td class="num">04</td><td>Maj Marin</td><td class="pnr-type cap">CDCiber</td></tr>
+          <tr><td class="num">05</td><td>Cap Fortaleza</td><td class="pnr-type cap">Cmt 7ª Cia Com — Recife/PE · PNR empenhado ao Cap Wanderley</td></tr>
+          <tr><td class="num">06</td><td>1º Ten Rodney</td><td class="pnr-type cap">Delegado — Aquidauana/MS · proposta 1º Ten Resmini, não confirmada</td></tr>
+          <tr><td class="num">07</td><td>1º Ten Rodrigo</td><td class="pnr-type cap">Delegado — Uruguaiana/RS · Sgt Danilo confirmado</td></tr>
+          <tr><td class="num">08</td><td>Sgt Aguiar</td><td class="pnr-type cap">Cmt TG 07-002 — Patos/PB · Sgt Willian, não confirmada</td></tr>
+          <tr><td class="num">09</td><td>Sgt Tibúrcio</td><td class="pnr-type cap">GSI · Sgt Lucas Guedes confirmado</td></tr>
+          <tr><td class="num">10</td><td>Sgt Vinicius Santos</td><td class="pnr-type cap">Baixa do EB</td></tr>
+          <tr><td class="num">11</td><td>Sgt Jaime</td><td class="pnr-type cap">Baixa do EB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PROPOSTAS NAO CONFIRMADAS ENTRADA ================= -->
+  <section class="block" id="prop-nao-confirmadas">
+    <div class="block-head">
+      <span class="idx">10</span>
+      <h2>Propostas para a EsCom não confirmadas — entrada</h2>
+      <span class="tag">6 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">1º Ten Com Leonardo Pereira <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Atual Comandante de Pelotão (22º Pel Com Sl).</div>
+        <div class="p14">P14 <b>2889505</b></div>
+      </div>
+      <div class="card">
+        <div class="name">1º Ten Gava <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Ch Seç Inf, 12ª Cia Com L. Proposta no PNR do 1º Ten Rodney.</div>
+        <div class="p14">P14 <b>2894070</b></div>
+      </div>
+      <div class="card">
+        <div class="name">2º Ten Com Nilton Silva da Anunciação Junior <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Terminando curso GCiber no CIGE. Proposta no PNR do Maj Marin — aguardando concorde do Cmt do militar.</div>
+      </div>
+      <div class="card">
+        <div class="name">1º Ten Art Resmini <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Proposta no PNR do 1º Ten Rodney — aguardando concorde da PMB.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Willian Antônio Barbosa <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Proposta no PNR do Sgt Aguiar.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Ricardo Silva da Cruz <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Curso na EsCom (7º BPE).</div>
       </div>
     </div>
   </section>
@@ -429,7 +567,7 @@
   <!-- ================= MAJORES ================= -->
   <section class="block" id="majores">
     <div class="block-head">
-      <span class="idx">08</span>
+      <span class="idx">11</span>
       <h2>Majores da EsCom</h2>
       <span class="tag">13 oficiais</span>
     </div>
@@ -442,14 +580,14 @@
           <tr><td class="num">01</td><td>Maj Paim</td><td class="pnr-type sup">PNR Of Sup</td></tr>
           <tr><td class="num">02</td><td>Maj Dos Anjos</td><td class="pnr-type sup">PNR Of Sup</td></tr>
           <tr><td class="num">03</td><td>Maj Damasceno</td><td class="pnr-type sup">PNR Of Sup</td></tr>
-          <tr><td class="num">04</td><td>Maj Caetano</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">04</td><td><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">Maj Caetano <span class="badge wait">Proposta DCT</span></div></td><td class="pnr-type sup">PNR Of Sup</td></tr>
           <tr><td class="num">05</td><td>Maj Gonçalves</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
-          <tr><td class="num">06</td><td>Maj Glauco</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">06</td><td><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">Maj Glauco <span class="badge confirmed">Saída confirmada</span></div></td><td class="pnr-type sup">PNR Of Sup</td></tr>
           <tr><td class="num">07</td><td>Maj Jean Karl</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
           <tr><td class="num">08</td><td>Maj Paulo Souza</td><td class="pnr-type sup">PNR Of Sup</td></tr>
           <tr><td class="num">09</td><td>Maj Luiz Paulo</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
           <tr><td class="num">10</td><td>Maj Berard</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
-          <tr><td class="num">11</td><td><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">Maj Leal <span class="badge pnr">Inscrito p/ S Cmt</span></div></td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">11</td><td>Maj Leal</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
           <tr><td class="num">12</td><td>Maj João Roberto</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
           <tr><td class="num">13</td><td>Maj Veloz</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
         </tbody>
@@ -457,18 +595,19 @@
     </div>
   </section>
 
-  <!-- ================= PENDENCIAS / IMPACTO ================= -->
+  <!-- ================= PENDENCIAS ================= -->
   <section class="block" id="impacto">
     <div class="block-head">
-      <span class="idx">09</span>
+      <span class="idx">12</span>
       <h2>Pendências e impacto no efetivo</h2>
     </div>
     <div class="pend-box">
-      <div class="pend-item"><span class="m">→</span> Sgt Com Lúcio / Sgt Evandro — P14 do Evandro no PNR do Lúcio segue condicionado à confirmação da transferência do Lúcio (P16 nr 2829294).</div>
-      <div class="pend-item"><span class="m">→</span> Maj Caetano e Maj Glauco — PNR de Of Sup ainda em aberto (Glauco pendente do término do curso).</div>
-      <div class="pend-item"><span class="m">→</span> Maj Inf Marin — PNR Cap/Ten segue em aberto.</div>
-      <div class="pend-item"><span class="m">→</span> Maj Leal — inscrito para cargo de Subcomandante (S Cmt) em outra OM, proposta P10 nr 2867443, aguardando concordância do Cmt/Chefe/Dir.</div>
-      <div class="pend-item"><span class="m">→</span> 3 de 4 saídas seguem sem reposição indicada (Jaime, Douglas Moura, Nathan).</div>
+      <div class="pend-item"><span class="m">→</span> Maj Marin — proposta do 2º Ten Nilton Silva da Anunciação Junior aguardando concorde do Cmt do militar.</div>
+      <div class="pend-item"><span class="m">→</span> 1º Ten Rodney — proposta do 1º Ten Art Resmini aguardando concorde da PMB; 1º Ten Gava segue como proposta separada, sem PNR, ainda não confirmada.</div>
+      <div class="pend-item"><span class="m">→</span> Sgt Aguiar — proposta do Sgt Willian Antônio Barbosa ainda não confirmada.</div>
+      <div class="pend-item"><span class="m">→</span> Sgt Lúcio — PNR vai para o Sgt Petrus, condicionado à confirmação da própria saída do Lúcio (P16 nr 2829294).</div>
+      <div class="pend-item"><span class="m">→</span> Ten Douglas Moura e Sgt Nathan — possíveis saídas ainda não confirmadas.</div>
+      <div class="pend-item"><span class="m">→</span> 1º Ten Leonardo Pereira e Sgt Ricardo Silva da Cruz — propostas de entrada ainda não confirmadas.</div>
     </div>
   </section>
 
