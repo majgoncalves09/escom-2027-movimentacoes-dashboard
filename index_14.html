@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EsCom 2027 — Painel de Movimentação de Pessoal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d1520;
+    --bg-panel: #121d2b;
+    --bg-panel-2: #16233380;
+    --line: #24344a;
+    --line-soft: #1c2a3c;
+    --brass: #c9a227;
+    --brass-soft: #e8c765;
+    --signal: #4f9bd6;
+    --ok: #4caf7d;
+    --warn: #e0a458;
+    --danger: #c1666b;
+    --text: #eef2f6;
+    --text-dim: #9fb0c3;
+    --text-faint: #6d7f96;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #16273a 0%, transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, #14202f 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--brass); color:#0d1520;}
+
+  .wrap{max-width:1240px; margin:0 auto; padding:0 28px 80px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:56px 0 40px;
+    border-bottom:1px solid var(--line-soft);
+    position:relative;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:1px;
+  }
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--brass-soft);
+    margin-bottom:18px;
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok);}
+  .hero h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:clamp(42px, 7vw, 84px);
+    line-height:.95;
+    margin:0 0 6px;
+    letter-spacing:.01em;
+    display:flex; align-items:baseline; gap:18px; flex-wrap:wrap;
+  }
+  .hero h1 span.year{
+    color:var(--brass);
+    -webkit-text-stroke: 0px;
+  }
+  .hero p.sub{
+    font-size:17px; color:var(--text-dim); max-width:640px; margin:14px 0 0; line-height:1.55;
+  }
+  .hero .meta-row{
+    margin-top:26px; display:flex; gap:28px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-faint); letter-spacing:.04em;
+  }
+  .hero .meta-row b{color:var(--text-dim); font-weight:500;}
+
+  /* ---------- RANK LADDER NAV ---------- */
+  .ladder{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;
+    margin:34px 0 44px;
+  }
+  .rung{
+    background:linear-gradient(180deg, var(--bg-panel), #101a26);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+    text-decoration:none;
+    color:inherit;
+    display:flex; flex-direction:column; gap:10px;
+    transition:border-color .2s ease, transform .2s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .rung::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:3px;
+  }
+  .rung.tier-a::before{background:var(--brass);}
+  .rung.tier-b::before{background:var(--signal);}
+  .rung.tier-c::before{background:#7fd8b0;}
+  .rung:hover{border-color:var(--line); transform:translateY(-2px);}
+  .rung .tier-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint);
+  }
+  .rung .tier-name{
+    font-family:'Barlow Condensed', sans-serif; font-size:26px; font-weight:600; letter-spacing:.01em;
+  }
+  .rung .tier-count{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);
+  }
+  .rung .tier-count b{color:var(--brass-soft); font-size:15px;}
+
+  /* ---------- KPI STRIP ---------- */
+  .kpis{
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:14px; margin-bottom:52px;
+  }
+  .kpi{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+  }
+  .kpi .label{font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px;}
+  .kpi .val{font-family:'Barlow Condensed', sans-serif; font-size:38px; font-weight:700; line-height:1;}
+  .kpi.accent-ok .val{color:var(--ok);}
+  .kpi.accent-warn .val{color:var(--warn);}
+  .kpi.accent-brass .val{color:var(--brass);}
+
+  /* ---------- SALDO SUMMARY ---------- */
+  .saldo-wrap{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;
+    margin:38px 0 44px;
+  }
+  .saldo-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 24px;
+  }
+  .saldo-card .saldo-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .saldo-card .saldo-title{
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:22px;
+  }
+  .saldo-card .saldo-net{
+    font-family:'IBM Plex Mono', monospace; font-size:13px;
+    padding:4px 12px; border-radius:20px;
+  }
+  .saldo-card .saldo-net.neg{background:#3a1e1f; color:var(--danger); border:1px solid #55292b;}
+  .saldo-card .saldo-net.pos{background:#1c3a2b; color:var(--ok); border:1px solid #2b5540;}
+  .saldo-card .saldo-net.zero{background:#26313f; color:var(--text-dim); border:1px solid var(--line);}
+  .saldo-rows{display:flex; gap:14px;}
+  .saldo-rows .row{flex:1; text-align:center; padding:14px 8px; border-radius:8px; background:#ffffff05;}
+  .saldo-rows .row .n{font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:32px; line-height:1;}
+  .saldo-rows .row.in .n{color:var(--ok);}
+  .saldo-rows .row.out .n{color:var(--danger);}
+  .saldo-rows .row .l{font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-top:6px;}
+  .saldo-foot{
+    margin-top:16px; padding-top:14px; border-top:1px dashed var(--line);
+    font-size:12.5px; color:var(--text-faint); line-height:1.5;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section.block{margin-bottom:56px; scroll-margin-top:24px;}
+  .block-head{
+    display:flex; align-items:baseline; gap:14px; margin-bottom:22px;
+    border-bottom:1px solid var(--line-soft); padding-bottom:14px;
+  }
+  .block-head .idx{
+    font-family:'IBM Plex Mono', monospace; color:var(--text-faint); font-size:13px;
+  }
+  .block-head h2{
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:28px; margin:0; letter-spacing:.01em;
+  }
+  .block-head .tag{
+    margin-left:auto;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-faint);
+    border:1px solid var(--line); padding:4px 10px; border-radius:20px;
+  }
+
+  .grid-cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(310px,1fr)); gap:14px;}
+
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+  }
+  .card .name{
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:20px; margin-bottom:8px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .card .desc{font-size:14px; line-height:1.55; color:var(--text-dim);}
+  .card .p14{
+    display:inline-block; margin-top:12px;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-faint);
+    border-top:1px dashed var(--line); padding-top:10px; width:100%;
+  }
+  .card .p14 b{color:var(--signal); font-weight:500;}
+
+  .badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0;
+  }
+  .badge.pnr{background:#1c3a2b; color:var(--ok); border:1px solid #2b5540;}
+  .badge.sem{background:#3a2f1c; color:var(--warn); border:1px solid #55432b;}
+  .badge.wait{background:#2a1f31; color:#c79bd8; border:1px solid #422e4d;}
+  .badge.confirmed{background:#1c3a2b; color:var(--ok); border:1px solid #2b5540;}
+  .badge.danger{background:#3a1e1f; color:var(--danger); border:1px solid #55292b;}
+
+  /* ---------- MAJORES TABLE ---------- */
+  .maj-table{width:100%; border-collapse:collapse; font-size:14.5px;}
+  .maj-table th{
+    text-align:left; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--text-faint); padding:0 16px 12px; border-bottom:1px solid var(--line);
+  }
+  .maj-table td{padding:13px 16px; border-bottom:1px solid var(--line-soft);}
+  .maj-table tr:hover td{background:#ffffff05;}
+  .maj-table td.num{font-family:'IBM Plex Mono', monospace; color:var(--text-faint); font-size:12.5px; width:36px;}
+  .maj-table td.pnr-type{font-family:'IBM Plex Mono', monospace; font-size:12px;}
+  .maj-table td.pnr-type.sup{color:var(--brass-soft);}
+  .maj-table td.pnr-type.cap{color:var(--signal);}
+
+  .table-wrap{background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:8px 6px 12px; overflow-x:auto;}
+
+  /* ---------- PENDENCIAS ---------- */
+  .pend-box{
+    background:linear-gradient(180deg, #1f1a12, #16130e);
+    border:1px solid #3a2f1c;
+    border-radius:10px;
+    padding:24px 26px;
+  }
+  .pend-box .pend-item{
+    display:flex; gap:12px; padding:10px 0; border-bottom:1px dashed #3a2f1c33;
+    font-size:14.5px; color:var(--text-dim); line-height:1.5;
+  }
+  .pend-box .pend-item:last-of-type{border-bottom:none;}
+  .pend-box .pend-item .m{color:var(--warn); flex-shrink:0;}
+
+  footer{
+    margin-top:60px; padding-top:24px; border-top:1px solid var(--line-soft);
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--text-faint);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  @media (max-width:760px){
+    .ladder{grid-template-columns:1fr;}
+    .saldo-wrap{grid-template-columns:1fr;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .maj-table{font-size:13px;}
+  }
+
+  .sector{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:2px 8px; border-radius:4px; margin-right:8px; display:inline-block;
+  }
+  .sector.ofsup{background:#2a2210; color:var(--brass-soft); border:1px solid #4a3c1a;}
+  .sector.captenn{background:#132635; color:var(--signal); border:1px solid #1e3d54;}
+  .sector.stensgt{background:#13291f; color:#7fd8b0; border:1px solid #1f4433;}
+  .section-note{margin-top:14px; font-size:13px; color:var(--text-faint); line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span> ESCOLA DE COMUNICAÇÕES — S/1 · GESTÃO DE PESSOAL</div>
+    <h1>Movimentação EsCom <span class="year">2027</span></h1>
+    <p class="sub">Panorama consolidado de PNR vagos, propostas e transferências confirmadas, organizado por categoria de movimentação — Oficiais e Subtenentes/Sargentos.</p>
+    <div class="meta-row">
+      <span><b>Escala:</b> Of Sup · Cap/Ten · STen/Sgt</span>
+      <span><b>Atualizado:</b> Ago/2026 para ano-base 2027</span>
+    </div>
+  </div>
+
+  <div class="saldo-wrap">
+    <div class="saldo-card">
+      <div class="saldo-head">
+        <span class="saldo-title">Saldo — Oficiais</span>
+        <span class="saldo-net neg">−5</span>
+      </div>
+      <div class="saldo-rows">
+        <div class="row in"><div class="n">01</div><div class="l">Entradas confirmadas</div></div>
+        <div class="row out"><div class="n">06</div><div class="l">Saídas confirmadas</div></div>
+      </div>
+      <div class="saldo-foot">Entrada: Cap Wanderley (PNR Fortaleza). Saídas 2027: Maj Caetano (DCT), Maj Glauco (ECEME), Cap Fortaleza, 1º Ten Rodney, 1º Ten Rodrigo, Ten Douglas Moura (4ª Cia Com L Mth). Não conta: Maj Marin (saída de ciclo anterior, PNR condicional). Ten Cel Paulo saiu em ciclo anterior — PNR dele já foi utilizado pelo Maj João Roberto. Não conta também: propostas de entrada não confirmadas (Leonardo Pereira, 1º Ten Gava, 2º Ten Nilton, 1º Ten Resmini).</div>
+    </div>
+    <div class="saldo-card">
+      <div class="saldo-head">
+        <span class="saldo-title">Saldo — Sargentos</span>
+        <span class="saldo-net zero">0</span>
+      </div>
+      <div class="saldo-rows">
+        <div class="row in"><div class="n">04</div><div class="l">Entradas confirmadas</div></div>
+        <div class="row out"><div class="n">04</div><div class="l">Saídas confirmadas</div></div>
+      </div>
+      <div class="saldo-foot">Entradas: Sgt Danilo da Silva Carvalho (PNR Rodrigo), Sgt Vinicius Lima, Sgt Petrus (PNR Lúcio), Sgt Lucas Guedes (PNR Tibúrcio). Saídas: Sgt Aguiar, Sgt Tibúrcio, Sgt Vinicius Santos (baixa do EB), Sgt Jaime (baixa do EB). Não conta: Sgt Nathan (possível saída), proposta de Willian no PNR do Aguiar (ainda não confirmada) e Sgt Ricardo Silva da Cruz (não confirmada).</div>
+    </div>
+  </div>
+
+  <!-- ================= PNR VAGOS OFICIAIS ================= -->
+  <section class="block" id="pnr-vagos-of">
+    <div class="block-head">
+      <span class="idx">01</span>
+      <h2>PNR — Oficiais</h2>
+      <span class="tag">5 posições</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name"><span class="sector ofsup">Of Sup</span>Maj Caetano</div>
+        <div class="desc">Transferência para o DCT já concluída. Nenhuma proposta no PNR ainda.</div>
+        <div class="p14">P14 <b>2870086</b></div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector ofsup">Of Sup</span>Maj Glauco</div>
+        <div class="desc">Transferência para a ECEME já concluída. Nenhuma proposta no PNR ainda.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>Maj Marin <span class="badge wait">P14 já realizado</span></div>
+        <div class="desc">Transferência para o CDCiber já concluída (ano passado). Proposta feita para o 2º Ten Com Nilton Silva da Anunciação Junior (terminando curso GCiber no CIGE) — aguardando concorde do Cmt do militar.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>Cap Fortaleza <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para ser Cmt da 7ª Cia Com, em Recife/PE, já concluída. PNR empenhado para o Cap Wanderley — já transferido no lugar.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector captenn">Cap/Ten</span>1º Ten Rodney <span class="badge wait">P14 já realizado</span></div>
+        <div class="desc">Transferência para ser Delegado em Aquidauana/MS já concluída. Proposta feita para o 1º Ten Art Resmini — aguardando concorde da PMB.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROPOSTAS ENTRADA SEM PNR - OFICIAIS ================= -->
+  <section class="block" id="prop-entrada-of">
+    <div class="block-head">
+      <span class="idx">02</span>
+      <h2>Propostas de entrada feitas sem PNR — Oficiais</h2>
+      <span class="tag">2 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">1º Ten Com Leonardo Pereira <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Atual Comandante de Pelotão (22º Pel Com Sl). Aguardando concorde do Cmt do militar.</div>
+        <div class="p14">P14 <b>2889505</b></div>
+      </div>
+      <div class="card">
+        <div class="name">1º Ten Gava <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Ch Seç Inf, 12ª Cia Com L. Transferência ainda não confirmada.</div>
+        <div class="p14">P14 <b>2894070</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESUMO PNRS VAGOS ================= -->
+  <section class="block" id="resumo-pnrs-vagos">
+    <div class="block-head">
+      <span class="idx">—</span>
+      <h2>Resumo de PNRs vagos</h2>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Of Sup <span class="badge sem">02</span></div>
+        <div class="desc">Maj Caetano e Maj Glauco.</div>
+      </div>
+      <div class="card">
+        <div class="name">Cap/Ten <span class="badge sem">01 (+1 condicional)</span></div>
+        <div class="desc">1 vaga em aberto, mais a vaga do Maj Marin — proposta feita para o 2º Ten Com Nilton Silva da Anunciação Junior, que está terminando o Curso de Guerra Cibernética no CIGE e serve atualmente em Campo Grande.</div>
+      </div>
+      <div class="card">
+        <div class="name">STen/Sgt <span class="badge sem">01</span></div>
+        <div class="desc">Sgt Aguiar, com P14 já feito para o Sgt Willian.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PNR VAGOS STEN/SGT ================= -->
+  <section class="block" id="pnr-vagos-sgt">
+    <div class="block-head">
+      <span class="idx">03</span>
+      <h2>PNR — Subtenentes / Sargentos</h2>
+      <span class="tag">3 posições</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>1º Ten Rodrigo <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para ser Delegado em Uruguaiana/RS já concluída. Oficial que ocupava PNR modelo STen/Sgt. Proposta do 1º Sgt QMS Com Danilo da Silva Carvalho (Nu 5º B Com) na vaga — transferência já confirmada.</div>
+        <div class="p14">P14 <b>2884689</b></div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>Sgt Aguiar <span class="badge wait">P14 já realizado</span></div>
+        <div class="desc">Transferência para ser Cmt do TG 07-002, em Patos/PB. Proposta do 2º Sgt QMS Com Willian Antônio Barbosa na vaga — ainda não confirmada.</div>
+      </div>
+      <div class="card">
+        <div class="name"><span class="sector stensgt">STen/Sgt</span>Sgt Tibúrcio <span class="badge confirmed">Resolvido</span></div>
+        <div class="desc">Transferência para o GSI. P14 realizado para o 2º Sgt QMS Mnt Com Lucas Guedes da Silva na vaga — transferência já confirmada.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PNRS QUE PODEM VAGAR - STEN/SGT ================= -->
+  <section class="block" id="pnr-pode-vagar-sgt">
+    <div class="block-head">
+      <span class="idx">04</span>
+      <h2>PNRs que podem vagar — Subtenentes / Sargentos</h2>
+      <span class="tag">1 posição</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Sgt Lúcio <span class="badge wait">Condicional</span></div>
+        <div class="desc">PNR vai para o Sgt Petrus (transferência já confirmada), condicionado à confirmação da própria saída do Lúcio (P16 nr 2829294).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= POSSIVEIS SAIDAS SEM PNR ================= -->
+  <section class="block" id="poss-saidas">
+    <div class="block-head">
+      <span class="idx">05</span>
+      <h2>Possíveis saídas sem PNR</h2>
+      <span class="tag">1 militar</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Sgt Nathan <span class="badge wait">Não confirmada</span></div>
+        <div class="desc">Solicitou transferência. Ainda não confirmada.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SAIDAS SEM PNR ================= -->
+  <section class="block" id="saidas-sem-pnr">
+    <div class="block-head">
+      <span class="idx">06</span>
+      <h2>Saídas sem PNR</h2>
+      <span class="tag">3 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Ten Douglas Moura <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Transferência para a 4ª Cia Com L Mth já confirmada.</div>
+      </div>
+      <div class="card">
+        <div class="name">Sgt Vinicius Santos <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Pediu baixa do EB.</div>
+      </div>
+      <div class="card">
+        <div class="name">Sgt Jaime <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Pediu baixa do EB.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROPOSTAS ENTRADA SEM PNR - STEN/SGT ================= -->
+  <section class="block" id="prop-entrada-sgt">
+    <div class="block-head">
+      <span class="idx">07</span>
+      <h2>Propostas de entrada feitas sem PNR — Subtenentes / Sargentos</h2>
+      <span class="tag">2 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">2º Sgt Mnt Com Vinicius Lima <span class="badge confirmed">Confirmada</span></div>
+        <div class="desc">Origem 2ª Cia Com Mec.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Ricardo Silva da Cruz <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Origem 7º BPE — realizando curso na EsCom.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRANSFERENCIAS CONFIRMADAS ENTRADA ================= -->
+  <section class="block" id="entradas-confirmadas">
+    <div class="block-head">
+      <span class="idx">08</span>
+      <h2>Transferências para a EsCom já confirmadas — entrada</h2>
+      <span class="tag">5 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">Cap Wanderley <span class="badge pnr">Cap/Ten</span></div>
+        <div class="desc">Comandante de Pelotão (2º Pel Com Sl). Provavelmente vai para a Seç Charlie.</div>
+      </div>
+      <div class="card">
+        <div class="name">1º Sgt QMS Com Danilo da Silva Carvalho <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem Nu 5º B Com. Provavelmente vai para a Seç Bravo, telegrafista. Preenche o PNR do 1º Ten Rodrigo.</div>
+        <div class="p14">P14 <b>2884689</b></div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt Mnt Com Vinicius Lima <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem 2ª Cia Com Mec. Entrada sem PNR.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt Mnt Com Petrus <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Origem Base Adm CComGEx. Apresenta e ganha o PNR do Sgt Lúcio.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Mnt Com Lucas Guedes da Silva <span class="badge pnr">STen/Sgt</span></div>
+        <div class="desc">Provavelmente vai para a Seç Bravo. Preenche o PNR do Sgt Tibúrcio.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRANSFERENCIAS CONFIRMADAS SAIDA ================= -->
+  <section class="block" id="saidas-confirmadas">
+    <div class="block-head">
+      <span class="idx">09</span>
+      <h2>Transferências da EsCom já confirmadas — saída</h2>
+      <span class="tag">12 militares</span>
+    </div>
+    <div class="table-wrap">
+      <table class="maj-table">
+        <thead>
+          <tr><th class="num">Nº</th><th>Militar</th><th>PNR / Situação</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">01</td><td>Ten Cel Paulo</td><td class="pnr-type sup">3ª DE — Cruz Alta/RS · PNR empenhado ao Maj João Roberto</td></tr>
+          <tr><td class="num">02</td><td>Maj Caetano</td><td class="pnr-type sup">DCT</td></tr>
+          <tr><td class="num">03</td><td>Maj Glauco</td><td class="pnr-type sup">ECEME</td></tr>
+          <tr><td class="num">04</td><td>Maj Marin</td><td class="pnr-type cap">CDCiber</td></tr>
+          <tr><td class="num">05</td><td>Cap Fortaleza</td><td class="pnr-type cap">Cmt 7ª Cia Com — Recife/PE · PNR empenhado ao Cap Wanderley</td></tr>
+          <tr><td class="num">06</td><td>1º Ten Rodney</td><td class="pnr-type cap">Delegado — Aquidauana/MS · proposta 1º Ten Resmini, não confirmada</td></tr>
+          <tr><td class="num">07</td><td>1º Ten Rodrigo</td><td class="pnr-type cap">Delegado — Uruguaiana/RS · Sgt Danilo confirmado</td></tr>
+          <tr><td class="num">08</td><td>Sgt Aguiar</td><td class="pnr-type cap">Cmt TG 07-002 — Patos/PB · Sgt Willian, não confirmada</td></tr>
+          <tr><td class="num">09</td><td>Sgt Tibúrcio</td><td class="pnr-type cap">GSI · Sgt Lucas Guedes confirmado</td></tr>
+          <tr><td class="num">10</td><td>Sgt Vinicius Santos</td><td class="pnr-type cap">Baixa do EB</td></tr>
+          <tr><td class="num">11</td><td>Sgt Jaime</td><td class="pnr-type cap">Baixa do EB</td></tr>
+          <tr><td class="num">12</td><td>Ten Douglas Moura</td><td class="pnr-type cap">4ª Cia Com L Mth</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PROPOSTAS NAO CONFIRMADAS ENTRADA ================= -->
+  <section class="block" id="prop-nao-confirmadas">
+    <div class="block-head">
+      <span class="idx">10</span>
+      <h2>Propostas para a EsCom não confirmadas — entrada</h2>
+      <span class="tag">6 militares</span>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <div class="name">1º Ten Com Leonardo Pereira <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Atual Comandante de Pelotão (22º Pel Com Sl).</div>
+        <div class="p14">P14 <b>2889505</b></div>
+      </div>
+      <div class="card">
+        <div class="name">1º Ten Gava <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Ch Seç Inf, 12ª Cia Com L. Proposta no PNR do 1º Ten Rodney.</div>
+        <div class="p14">P14 <b>2894070</b></div>
+      </div>
+      <div class="card">
+        <div class="name">2º Ten Com Nilton Silva da Anunciação Junior <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Terminando curso GCiber no CIGE. Proposta no PNR do Maj Marin — aguardando concorde do Cmt do militar.</div>
+      </div>
+      <div class="card">
+        <div class="name">1º Ten Art Resmini <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Proposta no PNR do 1º Ten Rodney — aguardando concorde da PMB.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Willian Antônio Barbosa <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Proposta no PNR do Sgt Aguiar.</div>
+      </div>
+      <div class="card">
+        <div class="name">2º Sgt QMS Com Ricardo Silva da Cruz <span class="badge sem">Não confirmada</span></div>
+        <div class="desc">Curso na EsCom (7º BPE).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAJORES ================= -->
+  <section class="block" id="majores">
+    <div class="block-head">
+      <span class="idx">11</span>
+      <h2>Majores da EsCom</h2>
+      <span class="tag">13 oficiais</span>
+    </div>
+    <div class="table-wrap">
+      <table class="maj-table">
+        <thead>
+          <tr><th class="num">Nº</th><th>Oficial</th><th>Tipo de PNR</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">01</td><td>Maj Paim</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">02</td><td>Maj Dos Anjos</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">03</td><td>Maj Damasceno</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">04</td><td><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">Maj Caetano <span class="badge wait">Proposta DCT</span></div></td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">05</td><td>Maj Gonçalves</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">06</td><td><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">Maj Glauco <span class="badge confirmed">Saída confirmada</span></div></td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">07</td><td>Maj Jean Karl</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">08</td><td>Maj Paulo Souza</td><td class="pnr-type sup">PNR Of Sup</td></tr>
+          <tr><td class="num">09</td><td>Maj Luiz Paulo</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">10</td><td>Maj Berard</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">11</td><td>Maj Leal</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">12</td><td>Maj João Roberto</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+          <tr><td class="num">13</td><td>Maj Veloz</td><td class="pnr-type cap">PNR Cap/Ten</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PENDENCIAS ================= -->
+  <section class="block" id="impacto">
+    <div class="block-head">
+      <span class="idx">12</span>
+      <h2>Pendências e impacto no efetivo</h2>
+    </div>
+    <div class="pend-box">
+      <div class="pend-item"><span class="m">→</span> Maj Marin — proposta do 2º Ten Nilton Silva da Anunciação Junior aguardando concorde do Cmt do militar.</div>
+      <div class="pend-item"><span class="m">→</span> 1º Ten Rodney — proposta do 1º Ten Art Resmini aguardando concorde da PMB; 1º Ten Gava segue como proposta separada, sem PNR, ainda não confirmada.</div>
+      <div class="pend-item"><span class="m">→</span> Sgt Aguiar — proposta do Sgt Willian Antônio Barbosa ainda não confirmada.</div>
+      <div class="pend-item"><span class="m">→</span> Sgt Lúcio — PNR vai para o Sgt Petrus, condicionado à confirmação da própria saída do Lúcio (P16 nr 2829294).</div>
+      <div class="pend-item"><span class="m">→</span> Sgt Nathan — possível saída ainda não confirmada.</div>
+      <div class="pend-item"><span class="m">→</span> 1º Ten Leonardo Pereira e Sgt Ricardo Silva da Cruz — propostas de entrada ainda não confirmadas.</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>ESCOLA DE COMUNICAÇÕES — Painel Executivo</span>
+    <span>Documento de uso interno</span>
+  </footer>
+
+</div>
+</body>
+</html>
